@@ -10,7 +10,6 @@ workflow_started = False
 
 
 class GreetingWorkflow:
-
     @query_method
     async def get_status(self):
         raise NotImplementedError
@@ -29,7 +28,6 @@ class GreetingWorkflow:
 
 
 class GreetingWorkflowImpl(GreetingWorkflow):
-
     def __init__(self):
         self.status = None
 
@@ -51,14 +49,17 @@ class GreetingWorkflowImpl(GreetingWorkflow):
 
 
 @pytest.mark.asyncio
-@pytest.mark.worker_config(NAMESPACE, TASK_QUEUE, activities=[], workflows=[GreetingWorkflowImpl])
+@pytest.mark.worker_config(
+    NAMESPACE, TASK_QUEUE, activities=[], workflows=[GreetingWorkflowImpl]
+)
 async def test(worker):
     global workflow_started
     client = WorkflowClient.new_client(namespace=NAMESPACE)
     greeting_workflow: GreetingWorkflow = client.new_workflow_stub(GreetingWorkflow)
     context = await WorkflowClient.start(greeting_workflow.get_greeting)
-    greeting_workflow = client.new_workflow_stub_from_workflow_id(GreetingWorkflow,
-                                                                  workflow_id=context.workflow_execution.workflow_id)
+    greeting_workflow = client.new_workflow_stub_from_workflow_id(
+        GreetingWorkflow, workflow_id=context.workflow_execution.workflow_id
+    )
     while not workflow_started:
         await asyncio.sleep(2)
     status = await greeting_workflow.get_status()

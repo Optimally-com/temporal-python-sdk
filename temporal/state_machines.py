@@ -1,8 +1,13 @@
 from dataclasses import dataclass, field
 from typing import Callable, List, Optional
 
-from .api.command.v1 import Command, ScheduleActivityTaskCommandAttributes, StartTimerCommandAttributes, \
-    CancelTimerCommandAttributes, RequestCancelActivityTaskCommandAttributes
+from .api.command.v1 import (
+    Command,
+    ScheduleActivityTaskCommandAttributes,
+    StartTimerCommandAttributes,
+    CancelTimerCommandAttributes,
+    RequestCancelActivityTaskCommandAttributes,
+)
 from .api.enums.v1 import CommandType
 from .api.history.v1 import HistoryEvent
 
@@ -58,6 +63,7 @@ class DecisionStateMachineBase(DecisionStateMachine):
     This class has feature parity with the Java version even though it implements parts of features
     not yet implemented in the Python version.
     """
+
     id: DecisionId = None
     state: DecisionState = DecisionState.CREATED
     state_history: List[str] = field(default_factory=list)
@@ -72,8 +78,10 @@ class DecisionStateMachineBase(DecisionStateMachine):
         return self.id
 
     def is_done(self) -> bool:
-        return self.state in (DecisionState.COMPLETED,
-                              DecisionState.COMPLETED_AFTER_CANCELLATION_DECISION_SENT)
+        return self.state in (
+            DecisionState.COMPLETED,
+            DecisionState.COMPLETED_AFTER_CANCELLATION_DECISION_SENT,
+        )
 
     def handle_decision_task_started_event(self):
         if self.state == DecisionState.CREATED:
@@ -114,7 +122,10 @@ class DecisionStateMachineBase(DecisionStateMachine):
     def handle_initiation_failed_event(self, event: HistoryEvent):
         self.state_history.append("handle_initiation_failed_event")
         if self.state in (
-                DecisionState.INITIATED, DecisionState.DECISION_SENT, DecisionState.CANCELED_BEFORE_INITIATED):
+            DecisionState.INITIATED,
+            DecisionState.DECISION_SENT,
+            DecisionState.CANCELED_BEFORE_INITIATED,
+        ):
             self.state = DecisionState.COMPLETED
         else:
             self.fail_state_transition()
@@ -125,7 +136,10 @@ class DecisionStateMachineBase(DecisionStateMachine):
 
     def handle_completion_event(self):
         self.state_history.append("handle_completion_event")
-        if self.state in (DecisionState.CANCELED_AFTER_INITIATED, DecisionState.INITIATED):
+        if self.state in (
+            DecisionState.CANCELED_AFTER_INITIATED,
+            DecisionState.INITIATED,
+        ):
             self.state = DecisionState.COMPLETED
         elif self.state == DecisionState.CANCELLATION_DECISION_SENT:
             self.state = DecisionState.COMPLETED_AFTER_CANCELLATION_DECISION_SENT
@@ -159,7 +173,9 @@ class DecisionStateMachineBase(DecisionStateMachine):
         self.state_history.append(str(self.state))
 
     def fail_state_transition(self):
-        raise IllegalStateException("id=" + str(self.id) + ", transitions=" + str(self.state_history))
+        raise IllegalStateException(
+            "id=" + str(self.id) + ", transitions=" + str(self.state_history)
+        )
 
 
 @dataclass
@@ -168,6 +184,7 @@ class ActivityDecisionStateMachine(DecisionStateMachineBase):
     This class has feature parity with the Java version even though it implements parts of features
     not yet implemented in the Python version.
     """
+
     schedule_attributes: ScheduleActivityTaskCommandAttributes = None
 
     def __post_init__(self):
@@ -246,7 +263,9 @@ class TimerDecisionStateMachine(DecisionStateMachineBase):
 
     def __post_init__(self):
         if not self.start_timer_attributes:
-            raise IllegalArgumentException("start_timer_decision_attributes is mandatory")
+            raise IllegalArgumentException(
+                "start_timer_decision_attributes is mandatory"
+            )
 
     def get_decision(self) -> Optional[Command]:
         if self.state == DecisionState.CREATED:
@@ -304,6 +323,3 @@ class MarkerDecisionStateMachine(DecisionStateMachineBase):
             return self.decision
         else:
             return None
-
-
-

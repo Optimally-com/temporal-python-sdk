@@ -24,7 +24,7 @@ from temporal.api.workflow import v1 as v1workflow
 
 @dataclass
 class RegisterNamespaceRequest(betterproto.Message):
-    name: str = betterproto.string_field(1)
+    namespace: str = betterproto.string_field(1)
     description: str = betterproto.string_field(2)
     owner_email: str = betterproto.string_field(3)
     workflow_execution_retention_period: timedelta = betterproto.message_field(4)
@@ -67,7 +67,7 @@ class ListNamespacesResponse(betterproto.Message):
 
 @dataclass
 class DescribeNamespaceRequest(betterproto.Message):
-    name: str = betterproto.string_field(1)
+    namespace: str = betterproto.string_field(1)
     id: str = betterproto.string_field(2)
 
 
@@ -75,8 +75,8 @@ class DescribeNamespaceRequest(betterproto.Message):
 class DescribeNamespaceResponse(betterproto.Message):
     namespace_info: v1namespace.NamespaceInfo = betterproto.message_field(1)
     config: v1namespace.NamespaceConfig = betterproto.message_field(2)
-    replication_config: v1replication.NamespaceReplicationConfig = betterproto.message_field(
-        3
+    replication_config: v1replication.NamespaceReplicationConfig = (
+        betterproto.message_field(3)
     )
     failover_version: int = betterproto.int64_field(4)
     is_global_namespace: bool = betterproto.bool_field(5)
@@ -91,11 +91,11 @@ class UpdateNamespaceRequest(betterproto.Message):
     precedent: UpdateNamespace RPC doesn't follow Google API format. --)
     """
 
-    name: str = betterproto.string_field(1)
+    namespace: str = betterproto.string_field(1)
     update_info: v1namespace.UpdateNamespaceInfo = betterproto.message_field(2)
     config: v1namespace.NamespaceConfig = betterproto.message_field(3)
-    replication_config: v1replication.NamespaceReplicationConfig = betterproto.message_field(
-        4
+    replication_config: v1replication.NamespaceReplicationConfig = (
+        betterproto.message_field(4)
     )
     security_token: str = betterproto.string_field(5)
     delete_bad_binary: str = betterproto.string_field(6)
@@ -105,8 +105,8 @@ class UpdateNamespaceRequest(betterproto.Message):
 class UpdateNamespaceResponse(betterproto.Message):
     namespace_info: v1namespace.NamespaceInfo = betterproto.message_field(1)
     config: v1namespace.NamespaceConfig = betterproto.message_field(2)
-    replication_config: v1replication.NamespaceReplicationConfig = betterproto.message_field(
-        3
+    replication_config: v1replication.NamespaceReplicationConfig = (
+        betterproto.message_field(3)
     )
     failover_version: int = betterproto.int64_field(4)
     is_global_namespace: bool = betterproto.bool_field(5)
@@ -114,7 +114,7 @@ class UpdateNamespaceResponse(betterproto.Message):
 
 @dataclass
 class DeprecateNamespaceRequest(betterproto.Message):
-    name: str = betterproto.string_field(1)
+    namespace: str = betterproto.string_field(1)
     security_token: str = betterproto.string_field(2)
 
 
@@ -208,8 +208,8 @@ class RespondWorkflowTaskCompletedRequest(betterproto.Message):
     task_token: bytes = betterproto.bytes_field(1)
     commands: List[v1command.Command] = betterproto.message_field(2)
     identity: str = betterproto.string_field(3)
-    sticky_attributes: v1taskqueue.StickyExecutionAttributes = betterproto.message_field(
-        4
+    sticky_attributes: v1taskqueue.StickyExecutionAttributes = (
+        betterproto.message_field(4)
     )
     return_new_workflow_task: bool = betterproto.bool_field(5)
     force_create_new_workflow_task: bool = betterproto.bool_field(6)
@@ -217,6 +217,7 @@ class RespondWorkflowTaskCompletedRequest(betterproto.Message):
     query_results: Dict[str, v1query.WorkflowQueryResult] = betterproto.map_field(
         8, betterproto.TYPE_STRING, betterproto.TYPE_MESSAGE
     )
+    namespace: str = betterproto.string_field(9)
 
 
 @dataclass
@@ -231,6 +232,7 @@ class RespondWorkflowTaskFailedRequest(betterproto.Message):
     failure: v1failure.Failure = betterproto.message_field(3)
     identity: str = betterproto.string_field(4)
     binary_checksum: str = betterproto.string_field(5)
+    namespace: str = betterproto.string_field(6)
 
 
 @dataclass
@@ -280,6 +282,7 @@ class RecordActivityTaskHeartbeatRequest(betterproto.Message):
     task_token: bytes = betterproto.bytes_field(1)
     details: v1common.Payloads = betterproto.message_field(2)
     identity: str = betterproto.string_field(3)
+    namespace: str = betterproto.string_field(4)
 
 
 @dataclass
@@ -307,6 +310,7 @@ class RespondActivityTaskCompletedRequest(betterproto.Message):
     task_token: bytes = betterproto.bytes_field(1)
     result: v1common.Payloads = betterproto.message_field(2)
     identity: str = betterproto.string_field(3)
+    namespace: str = betterproto.string_field(4)
 
 
 @dataclass
@@ -334,6 +338,7 @@ class RespondActivityTaskFailedRequest(betterproto.Message):
     task_token: bytes = betterproto.bytes_field(1)
     failure: v1failure.Failure = betterproto.message_field(2)
     identity: str = betterproto.string_field(3)
+    namespace: str = betterproto.string_field(4)
 
 
 @dataclass
@@ -361,6 +366,7 @@ class RespondActivityTaskCanceledRequest(betterproto.Message):
     task_token: bytes = betterproto.bytes_field(1)
     details: v1common.Payloads = betterproto.message_field(2)
     identity: str = betterproto.string_field(3)
+    namespace: str = betterproto.string_field(4)
 
 
 @dataclass
@@ -389,6 +395,7 @@ class RequestCancelWorkflowExecutionRequest(betterproto.Message):
     workflow_execution: v1common.WorkflowExecution = betterproto.message_field(2)
     identity: str = betterproto.string_field(3)
     request_id: str = betterproto.string_field(4)
+    first_execution_run_id: str = betterproto.string_field(5)
 
 
 @dataclass
@@ -465,6 +472,7 @@ class TerminateWorkflowExecutionRequest(betterproto.Message):
     reason: str = betterproto.string_field(3)
     details: v1common.Payloads = betterproto.message_field(4)
     identity: str = betterproto.string_field(5)
+    first_execution_run_id: str = betterproto.string_field(6)
 
 
 @dataclass
@@ -586,7 +594,7 @@ class RespondQueryTaskCompletedRequest(betterproto.Message):
     completed_type: v1enums.QueryResultType = betterproto.enum_field(2)
     query_result: v1common.Payloads = betterproto.message_field(3)
     error_message: str = betterproto.string_field(4)
-    worker_version_info: v1version.WorkerVersionInfo = betterproto.message_field(5)
+    namespace: str = betterproto.string_field(6)
 
 
 @dataclass
@@ -630,8 +638,8 @@ class DescribeWorkflowExecutionRequest(betterproto.Message):
 @dataclass
 class DescribeWorkflowExecutionResponse(betterproto.Message):
     execution_config: v1workflow.WorkflowExecutionConfig = betterproto.message_field(1)
-    workflow_execution_info: v1workflow.WorkflowExecutionInfo = betterproto.message_field(
-        2
+    workflow_execution_info: v1workflow.WorkflowExecutionInfo = (
+        betterproto.message_field(2)
     )
     pending_activities: List[
         v1workflow.PendingActivityInfo
@@ -662,11 +670,19 @@ class GetClusterInfoRequest(betterproto.Message):
 
 @dataclass
 class GetClusterInfoResponse(betterproto.Message):
-    """GetClusterInfoResponse contains information about Temporal cluster"""
+    """GetClusterInfoResponse contains information about Temporal cluster."""
 
-    supported_sdk_versions: v1version.SupportedSDKVersions = betterproto.message_field(
-        1
+    # Key is client name i.e "temporal-go", "temporal-java", or "temporal-cli".
+    # Value is ranges of supported versions of this client i.e ">1.1.1 <=1.4.0 ||
+    # ^5.0.0".
+    supported_clients: Dict[str, str] = betterproto.map_field(
+        1, betterproto.TYPE_STRING, betterproto.TYPE_STRING
     )
+    server_version: str = betterproto.string_field(2)
+    cluster_id: str = betterproto.string_field(3)
+    version_info: v1version.VersionInfo = betterproto.message_field(4)
+    cluster_name: str = betterproto.string_field(5)
+    history_shard_count: int = betterproto.int32_field(6)
 
 
 @dataclass
@@ -882,9 +898,12 @@ class WorkflowServiceStub(betterproto.ServiceStub):
         'RespondActivityTaskCompleted' or 'RespondActivityTaskFailed' once it
         is done processing the task. Application also needs to call
         'RecordActivityTaskHeartbeat' API within 'heartbeatTimeoutSeconds'
-        interval to prevent the task from getting timed out.  An event
-        'ActivityTaskStarted' event is also written to workflow execution
-        history before the ActivityTask is dispatched to application worker.
+        interval to prevent the Task from getting timed out.  An in memory
+        event 'ActivityTaskStarted' is also written to mutable state before the
+        ActivityTask is dispatched to application Worker. 'ActivityTaskStarted'
+        and Activity finish event: 'ActivityTaskCompleted' /
+        'ActivityTaskFailed' / 'ActivityTaskTimedout' will both be written to
+        Workflow execution  history when Activity is finished.
         """
 
         return await self._unary_unary(
@@ -1268,8 +1287,7 @@ class WorkflowServiceStub(betterproto.ServiceStub):
         """
         ResetStickyTaskQueue resets the sticky task queue related information
         in mutable state of a given workflow. Things cleared are: 1.
-        StickyTaskQueue 2. StickyScheduleToStartTimeout 3. ClientLibraryVersion
-        4. ClientFeatureVersion 5. ClientImpl
+        StickyTaskQueue 2. StickyScheduleToStartTimeout
         """
 
         return await self._unary_unary(

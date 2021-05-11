@@ -70,30 +70,50 @@ class Worker:
     num_activity_tasks = 1
     num_worker_tasks = 1
 
-    def register_activities_implementation(self, activities_instance: object, activities_cls_name: str = None):
-        cls_name = activities_cls_name if activities_cls_name else type(activities_instance).__name__
-        for method_name, fn in inspect.getmembers(activities_instance, predicate=inspect.ismethod):
+    def register_activities_implementation(
+        self, activities_instance: object, activities_cls_name: str = None
+    ):
+        cls_name = (
+            activities_cls_name
+            if activities_cls_name
+            else type(activities_instance).__name__
+        )
+        for method_name, fn in inspect.getmembers(
+            activities_instance, predicate=inspect.ismethod
+        ):
             if method_name.startswith("_"):
                 continue
-            self.activities[f'{cls_name}::{camel_to_snake(method_name)}'] = fn
-            self.activities[f'{cls_name}::{snake_to_camel(method_name)}'] = fn
-            self.activities[f'{cls_name}::{snake_to_title(method_name)}'] = fn
+            self.activities[f"{cls_name}::{camel_to_snake(method_name)}"] = fn
+            self.activities[f"{cls_name}::{snake_to_camel(method_name)}"] = fn
+            self.activities[f"{cls_name}::{snake_to_title(method_name)}"] = fn
 
-    def register_workflow_implementation_type(self, impl_cls: type, workflow_cls_name: str = None):
-        cls_name = workflow_cls_name if workflow_cls_name else _find_interface_class(impl_cls).__name__
+    def register_workflow_implementation_type(
+        self, impl_cls: type, workflow_cls_name: str = None
+    ):
+        cls_name = (
+            workflow_cls_name
+            if workflow_cls_name
+            else _find_interface_class(impl_cls).__name__
+        )
         if not hasattr(impl_cls, "_signal_methods"):
             impl_cls._signal_methods = {}  # type: ignore
         if not hasattr(impl_cls, "_query_methods"):
             impl_cls._query_methods = {}  # type: ignore
-        for method_name, fn in inspect.getmembers(impl_cls, predicate=inspect.isfunction):
+        for method_name, fn in inspect.getmembers(
+            impl_cls, predicate=inspect.isfunction
+        ):
             wm: WorkflowMethod = _get_wm(impl_cls, method_name)
             if wm:
                 impl_fn = getattr(impl_cls, method_name)
                 self.workflow_methods[wm._name] = (impl_cls, impl_fn)
                 if "::" in wm._name:
                     _, method_name = wm._name.split("::")
-                    self.workflow_methods[f'{cls_name}::{camel_to_snake(method_name)}'] = (impl_cls, impl_fn)
-                    self.workflow_methods[f'{cls_name}::{snake_to_camel(method_name)}'] = (impl_cls, impl_fn)
+                    self.workflow_methods[
+                        f"{cls_name}::{camel_to_snake(method_name)}"
+                    ] = (impl_cls, impl_fn)
+                    self.workflow_methods[
+                        f"{cls_name}::{snake_to_camel(method_name)}"
+                    ] = (impl_cls, impl_fn)
                 continue
             sm: SignalMethod = _get_sm(impl_cls, method_name)
             if sm:
@@ -101,8 +121,8 @@ class Worker:
                 impl_cls._signal_methods[sm.name] = impl_fn  # type: ignore
                 if "::" in sm.name:
                     _, method_name = sm.name.split("::")
-                    impl_cls._signal_methods[f'{cls_name}::{camel_to_snake(method_name)}'] = impl_fn  # type: ignore
-                    impl_cls._signal_methods[f'{cls_name}::{snake_to_camel(method_name)}'] = impl_fn  # type: ignore
+                    impl_cls._signal_methods[f"{cls_name}::{camel_to_snake(method_name)}"] = impl_fn  # type: ignore
+                    impl_cls._signal_methods[f"{cls_name}::{snake_to_camel(method_name)}"] = impl_fn  # type: ignore
                 continue
             qm: QueryMethod = _get_qm(impl_cls, method_name)
             if qm:
@@ -110,12 +130,13 @@ class Worker:
                 impl_cls._query_methods[qm.name] = impl_fn  # type: ignore
                 if "::" in qm.name:
                     _, method_name = qm.name.split("::")
-                    impl_cls._query_methods[f'{cls_name}::{camel_to_snake(method_name)}'] = impl_fn  # type: ignore
-                    impl_cls._query_methods[f'{cls_name}::{snake_to_camel(method_name)}'] = impl_fn  # type: ignore
+                    impl_cls._query_methods[f"{cls_name}::{camel_to_snake(method_name)}"] = impl_fn  # type: ignore
+                    impl_cls._query_methods[f"{cls_name}::{snake_to_camel(method_name)}"] = impl_fn  # type: ignore
 
     def start(self):
         from .activity_loop import activity_task_loop_func
         from .decision_loop import decision_task_loop_func
+
         self.threads_stopped = 0
         self.threads_started = 0
         self.stop_requested = False

@@ -89,6 +89,6 @@ class Failure(betterproto.Message):
     activity_failure_info: "ActivityFailureInfo" = betterproto.message_field(
         11, group="failure_info"
     )
-    child_workflow_execution_failure_info: "ChildWorkflowExecutionFailureInfo" = betterproto.message_field(
-        12, group="failure_info"
+    child_workflow_execution_failure_info: "ChildWorkflowExecutionFailureInfo" = (
+        betterproto.message_field(12, group="failure_info")
     )

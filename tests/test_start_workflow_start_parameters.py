@@ -25,21 +25,29 @@ class GreetingWorkflowImpl(GreetingWorkflow):
 
 
 @pytest.mark.asyncio
-@pytest.mark.worker_config(NAMESPACE, TASK_QUEUE, activities=[], workflows=[GreetingWorkflowImpl])
+@pytest.mark.worker_config(
+    NAMESPACE, TASK_QUEUE, activities=[], workflows=[GreetingWorkflowImpl]
+)
 async def test(worker):
     client = WorkflowClient.new_client(namespace=NAMESPACE)
     options = WorkflowOptions()
-    options.workflow_id = 'blah' + str(datetime.now())
-    options.workflow_id_reuse_policy = WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE
+    options.workflow_id = "blah" + str(datetime.now())
+    options.workflow_id_reuse_policy = (
+        WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE
+    )
     options.workflow_execution_timeout = timedelta(seconds=1000)
     options.workflow_run_timeout = timedelta(seconds=500)
     options.workflow_task_timeout = timedelta(seconds=30)
     options.memo = {"name": "bob"}
     options.search_attributes = {}
-    greeting_workflow: GreetingWorkflow = client.new_workflow_stub(GreetingWorkflow, workflow_options=options)
+    greeting_workflow: GreetingWorkflow = client.new_workflow_stub(
+        GreetingWorkflow, workflow_options=options
+    )
     await greeting_workflow.get_greeting()
-    request = GetWorkflowExecutionHistoryRequest(namespace=NAMESPACE,
-                                                 execution=WorkflowExecution(workflow_id=options.workflow_id))
+    request = GetWorkflowExecutionHistoryRequest(
+        namespace=NAMESPACE,
+        execution=WorkflowExecution(workflow_id=options.workflow_id),
+    )
     response = await client.service.get_workflow_execution_history(request=request)
     attr = response.history.events[0].workflow_execution_started_event_attributes
     assert attr.workflow_execution_timeout == timedelta(seconds=1000)

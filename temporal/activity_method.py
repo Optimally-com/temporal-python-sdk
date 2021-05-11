@@ -6,7 +6,6 @@ from typing import Callable, List
 from temporal.api.common.v1 import RetryPolicy, ActivityType, Payloads
 
 
-
 def get_activity_method_name(method: Callable):
     return "::".join(method.__qualname__.split(".")[-2:])
 
@@ -43,15 +42,25 @@ class ExecuteActivityParameters:
     retry_parameters: RetryParameters = None
 
 
-def activity_method(func: Callable = None, name: str = "", schedule_to_close_timeout: timedelta = None,
-                    schedule_to_start_timeout: timedelta = None, start_to_close_timeout: timedelta = None,
-                    heartbeat_timeout: timedelta = None, task_queue: str = "", retry_parameters: RetryParameters = None):
+def activity_method(
+    func: Callable = None,
+    name: str = "",
+    schedule_to_close_timeout: timedelta = None,
+    schedule_to_start_timeout: timedelta = None,
+    start_to_close_timeout: timedelta = None,
+    heartbeat_timeout: timedelta = None,
+    task_queue: str = "",
+    retry_parameters: RetryParameters = None,
+):
     def wrapper(fn: Callable):
         # noinspection PyProtectedMember
         async def stub_activity_fn(self, *args):
             from .async_activity import Async
             from .decision_loop import ActivityFuture
-            future: ActivityFuture = Async.function_with_self(stub_activity_fn, self, *args)
+
+            future: ActivityFuture = Async.function_with_self(
+                stub_activity_fn, self, *args
+            )
             return await future.wait_for_result()
 
         if not task_queue:
@@ -60,7 +69,9 @@ def activity_method(func: Callable = None, name: str = "", schedule_to_close_tim
         execute_parameters = ExecuteActivityParameters()
         execute_parameters.fn = fn
         execute_parameters.activity_type = ActivityType()
-        execute_parameters.activity_type.name = name if name else get_activity_method_name(fn)
+        execute_parameters.activity_type.name = (
+            name if name else get_activity_method_name(fn)
+        )
         execute_parameters.schedule_to_close_timeout = schedule_to_close_timeout
         execute_parameters.schedule_to_start_timeout = schedule_to_start_timeout
         execute_parameters.start_to_close_timeout = start_to_close_timeout
@@ -86,11 +97,17 @@ class ActivityOptions:
     heartbeat_timeout: timedelta = None
     task_queue: str = None
 
-    def fill_execute_activity_parameters(self, execute_parameters: ExecuteActivityParameters):
+    def fill_execute_activity_parameters(
+        self, execute_parameters: ExecuteActivityParameters
+    ):
         if self.schedule_to_close_timeout is not None:
-            execute_parameters.schedule_to_close_timeout = self.schedule_to_close_timeout
+            execute_parameters.schedule_to_close_timeout = (
+                self.schedule_to_close_timeout
+            )
         if self.schedule_to_start_timeout is not None:
-            execute_parameters.schedule_to_start_timeout = self.schedule_to_start_timeout
+            execute_parameters.schedule_to_start_timeout = (
+                self.schedule_to_start_timeout
+            )
         if self.start_to_close_timeout is not None:
             execute_parameters.start_to_close_timeout = self.start_to_close_timeout
         if self.heartbeat_timeout is not None:
@@ -111,6 +128,7 @@ class UntypedActivityStub:
 
     async def execute_async(self, activity_name: str, *args):
         from .async_activity import Async
+
         execute_parameters = ExecuteActivityParameters()
         execute_parameters.activity_type = ActivityType()
         execute_parameters.activity_type.name = activity_name

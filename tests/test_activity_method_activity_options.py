@@ -15,24 +15,25 @@ workflow_id = "test_activity_method_activity_options-" + str(uuid.uuid4())
 
 
 class GreetingActivities:
-    @activity_method(task_queue=TASK_QUEUE,
-                     schedule_to_close_timeout=timedelta(seconds=1000),
-                     schedule_to_start_timeout=timedelta(seconds=500),
-                     start_to_close_timeout=timedelta(seconds=800),
-                     heartbeat_timeout=timedelta(seconds=600),
-                     retry_parameters=RetryParameters(
-                         initial_interval=timedelta(seconds=70),
-                         backoff_coefficient=5.0,
-                         maximum_interval=timedelta(seconds=700),
-                         maximum_attempts=8,
-                         non_retryable_error_types=["DummyError"]
-                     ))
+    @activity_method(
+        task_queue=TASK_QUEUE,
+        schedule_to_close_timeout=timedelta(seconds=1000),
+        schedule_to_start_timeout=timedelta(seconds=500),
+        start_to_close_timeout=timedelta(seconds=800),
+        heartbeat_timeout=timedelta(seconds=600),
+        retry_parameters=RetryParameters(
+            initial_interval=timedelta(seconds=70),
+            backoff_coefficient=5.0,
+            maximum_interval=timedelta(seconds=700),
+            maximum_attempts=8,
+            non_retryable_error_types=["DummyError"],
+        ),
+    )
     async def compose_greeting(self) -> str:
         raise NotImplementedError
 
 
 class GreetingActivitiesImpl:
-
     async def compose_greeting(self):
         pass
 
@@ -44,31 +45,65 @@ class GreetingWorkflow:
 
 
 class GreetingWorkflowImpl(GreetingWorkflow):
-
     def __init__(self):
-        self.greeting_activities: GreetingActivities = Workflow.new_activity_stub(GreetingActivities)
+        self.greeting_activities: GreetingActivities = Workflow.new_activity_stub(
+            GreetingActivities
+        )
 
     async def get_greeting(self):
         await self.greeting_activities.compose_greeting()
 
 
 @pytest.mark.asyncio
-@pytest.mark.worker_config(NAMESPACE, TASK_QUEUE, activities=[(GreetingActivitiesImpl(), "GreetingActivities")],
-                           workflows=[GreetingWorkflowImpl])
+@pytest.mark.worker_config(
+    NAMESPACE,
+    TASK_QUEUE,
+    activities=[(GreetingActivitiesImpl(), "GreetingActivities")],
+    workflows=[GreetingWorkflowImpl],
+)
 async def test(worker):
     client = WorkflowClient.new_client(namespace=NAMESPACE)
     greeting_workflow: GreetingWorkflow = client.new_workflow_stub(GreetingWorkflow)
     await greeting_workflow.get_greeting()
-    request = GetWorkflowExecutionHistoryRequest(namespace=NAMESPACE,
-                                                 execution=WorkflowExecution(workflow_id=workflow_id))
+    request = GetWorkflowExecutionHistoryRequest(
+        namespace=NAMESPACE, execution=WorkflowExecution(workflow_id=workflow_id)
+    )
     response = await client.service.get_workflow_execution_history(request=request)
-    e = next(filter(lambda v: v.event_type == EventType.EVENT_TYPE_ACTIVITY_TASK_SCHEDULED, response.history.events))
-    assert e.activity_task_scheduled_event_attributes.schedule_to_close_timeout == timedelta(seconds=1000)
-    assert e.activity_task_scheduled_event_attributes.schedule_to_start_timeout == timedelta(seconds=500)
-    assert e.activity_task_scheduled_event_attributes.start_to_close_timeout == timedelta(seconds=800)
-    assert e.activity_task_scheduled_event_attributes.heartbeat_timeout == timedelta(seconds=600)
-    assert e.activity_task_scheduled_event_attributes.retry_policy.initial_interval == timedelta(seconds=70)
-    assert e.activity_task_scheduled_event_attributes.retry_policy.backoff_coefficient == 5.0
-    assert e.activity_task_scheduled_event_attributes.retry_policy.maximum_interval == timedelta(seconds=700)
+    e = next(
+        filter(
+            lambda v: v.event_type == EventType.EVENT_TYPE_ACTIVITY_TASK_SCHEDULED,
+            response.history.events,
+        )
+    )
+    assert (
+        e.activity_task_scheduled_event_attributes.schedule_to_close_timeout
+        == timedelta(seconds=1000)
+    )
+    assert (
+        e.activity_task_scheduled_event_attributes.schedule_to_start_timeout
+        == timedelta(seconds=500)
+    )
+    assert (
+        e.activity_task_scheduled_event_attributes.start_to_close_timeout
+        == timedelta(seconds=800)
+    )
+    assert e.activity_task_scheduled_event_attributes.heartbeat_timeout == timedelta(
+        seconds=600
+    )
+    assert (
+        e.activity_task_scheduled_event_attributes.retry_policy.initial_interval
+        == timedelta(seconds=70)
+    )
+    assert (
+        e.activity_task_scheduled_event_attributes.retry_policy.backoff_coefficient
+        == 5.0
+    )
+    assert (
+        e.activity_task_scheduled_event_attributes.retry_policy.maximum_interval
+        == timedelta(seconds=700)
+    )
     assert e.activity_task_scheduled_event_attributes.retry_policy.maximum_attempts == 8
-    assert e.activity_task_scheduled_event_attributes.retry_policy.non_retryable_error_types == ["DummyError"]
+    assert (
+        e.activity_task_scheduled_event_attributes.retry_policy.non_retryable_error_types
+        == ["DummyError"]
+    )

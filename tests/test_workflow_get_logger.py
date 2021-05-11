@@ -2,7 +2,11 @@ import logging
 
 import pytest
 
-from .interceptor_testing_utils import reset_counter_filter_counter, LOGGING, get_counter_filter_counter
+from .interceptor_testing_utils import (
+    reset_counter_filter_counter,
+    LOGGING,
+    get_counter_filter_counter,
+)
 from temporal.workflow import workflow_method, WorkflowClient, Workflow
 
 TASK_QUEUE = "test_workflow_workflow_get_logger"
@@ -10,14 +14,12 @@ NAMESPACE = "default"
 
 
 class GreetingWorkflow:
-
     @workflow_method(task_queue=TASK_QUEUE)
     async def get_greeting(self) -> None:
         raise NotImplementedError
 
 
 class GreetingWorkflowImpl(GreetingWorkflow):
-
     async def get_greeting(self):
         logger = Workflow.get_logger("test-logger")
         logger.info("********Test %d", 1)
@@ -32,7 +34,9 @@ class GreetingWorkflowImpl(GreetingWorkflow):
 
 
 @pytest.mark.asyncio
-@pytest.mark.worker_config(NAMESPACE, TASK_QUEUE, activities=[], workflows=[GreetingWorkflowImpl])
+@pytest.mark.worker_config(
+    NAMESPACE, TASK_QUEUE, activities=[], workflows=[GreetingWorkflowImpl]
+)
 async def test(worker):
     reset_counter_filter_counter()
     logging.config.dictConfig(LOGGING)

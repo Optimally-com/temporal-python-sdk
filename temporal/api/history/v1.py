@@ -468,53 +468,53 @@ class HistoryEvent(betterproto.Message):
     workflow_execution_timed_out_event_attributes: "WorkflowExecutionTimedOutEventAttributes" = betterproto.message_field(
         9, group="attributes"
     )
-    workflow_task_scheduled_event_attributes: "WorkflowTaskScheduledEventAttributes" = betterproto.message_field(
-        10, group="attributes"
+    workflow_task_scheduled_event_attributes: "WorkflowTaskScheduledEventAttributes" = (
+        betterproto.message_field(10, group="attributes")
     )
-    workflow_task_started_event_attributes: "WorkflowTaskStartedEventAttributes" = betterproto.message_field(
-        11, group="attributes"
+    workflow_task_started_event_attributes: "WorkflowTaskStartedEventAttributes" = (
+        betterproto.message_field(11, group="attributes")
     )
-    workflow_task_completed_event_attributes: "WorkflowTaskCompletedEventAttributes" = betterproto.message_field(
-        12, group="attributes"
+    workflow_task_completed_event_attributes: "WorkflowTaskCompletedEventAttributes" = (
+        betterproto.message_field(12, group="attributes")
     )
-    workflow_task_timed_out_event_attributes: "WorkflowTaskTimedOutEventAttributes" = betterproto.message_field(
-        13, group="attributes"
+    workflow_task_timed_out_event_attributes: "WorkflowTaskTimedOutEventAttributes" = (
+        betterproto.message_field(13, group="attributes")
     )
-    workflow_task_failed_event_attributes: "WorkflowTaskFailedEventAttributes" = betterproto.message_field(
-        14, group="attributes"
+    workflow_task_failed_event_attributes: "WorkflowTaskFailedEventAttributes" = (
+        betterproto.message_field(14, group="attributes")
     )
-    activity_task_scheduled_event_attributes: "ActivityTaskScheduledEventAttributes" = betterproto.message_field(
-        15, group="attributes"
+    activity_task_scheduled_event_attributes: "ActivityTaskScheduledEventAttributes" = (
+        betterproto.message_field(15, group="attributes")
     )
-    activity_task_started_event_attributes: "ActivityTaskStartedEventAttributes" = betterproto.message_field(
-        16, group="attributes"
+    activity_task_started_event_attributes: "ActivityTaskStartedEventAttributes" = (
+        betterproto.message_field(16, group="attributes")
     )
-    activity_task_completed_event_attributes: "ActivityTaskCompletedEventAttributes" = betterproto.message_field(
-        17, group="attributes"
+    activity_task_completed_event_attributes: "ActivityTaskCompletedEventAttributes" = (
+        betterproto.message_field(17, group="attributes")
     )
-    activity_task_failed_event_attributes: "ActivityTaskFailedEventAttributes" = betterproto.message_field(
-        18, group="attributes"
+    activity_task_failed_event_attributes: "ActivityTaskFailedEventAttributes" = (
+        betterproto.message_field(18, group="attributes")
     )
-    activity_task_timed_out_event_attributes: "ActivityTaskTimedOutEventAttributes" = betterproto.message_field(
-        19, group="attributes"
+    activity_task_timed_out_event_attributes: "ActivityTaskTimedOutEventAttributes" = (
+        betterproto.message_field(19, group="attributes")
     )
-    timer_started_event_attributes: "TimerStartedEventAttributes" = betterproto.message_field(
-        20, group="attributes"
+    timer_started_event_attributes: "TimerStartedEventAttributes" = (
+        betterproto.message_field(20, group="attributes")
     )
-    timer_fired_event_attributes: "TimerFiredEventAttributes" = betterproto.message_field(
-        21, group="attributes"
+    timer_fired_event_attributes: "TimerFiredEventAttributes" = (
+        betterproto.message_field(21, group="attributes")
     )
     activity_task_cancel_requested_event_attributes: "ActivityTaskCancelRequestedEventAttributes" = betterproto.message_field(
         22, group="attributes"
     )
-    activity_task_canceled_event_attributes: "ActivityTaskCanceledEventAttributes" = betterproto.message_field(
-        23, group="attributes"
+    activity_task_canceled_event_attributes: "ActivityTaskCanceledEventAttributes" = (
+        betterproto.message_field(23, group="attributes")
     )
-    timer_canceled_event_attributes: "TimerCanceledEventAttributes" = betterproto.message_field(
-        24, group="attributes"
+    timer_canceled_event_attributes: "TimerCanceledEventAttributes" = (
+        betterproto.message_field(24, group="attributes")
     )
-    marker_recorded_event_attributes: "MarkerRecordedEventAttributes" = betterproto.message_field(
-        25, group="attributes"
+    marker_recorded_event_attributes: "MarkerRecordedEventAttributes" = (
+        betterproto.message_field(25, group="attributes")
     )
     workflow_execution_signaled_event_attributes: "WorkflowExecutionSignaledEventAttributes" = betterproto.message_field(
         26, group="attributes"

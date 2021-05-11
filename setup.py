@@ -13,16 +13,14 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/firdaus/temporal-python-sdk",
-    packages=setuptools.find_packages(exclude=["cadence", "tests", "cadence.*", "tests.*"]),
+    packages=setuptools.find_packages(exclude=["tests", "tests.*"]),
     install_requires=[
         "betterproto-for-temporal-python-sdk==1.2.5",
         "dataclasses-json==0.3.8",
-        "grpcio==1.30.0",
-        "grpclib==0.3.2",
-        "h2==3.2.0",
+        "grpclib==0.4.1",
         "more-itertools==7.0.0",
         "pytz==2020.1",
-        "tblib==1.6.0"
+        "tblib==1.6.0",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -31,5 +29,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    include_package_data=True
+    include_package_data=True,
 )

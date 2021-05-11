@@ -5,6 +5,7 @@ from typing import Callable
 def get_replay_aware_interceptor(fn: Callable):
     def interceptor(*args, **kwargs):
         from .decision_loop import ITask
+
         task: ITask = ITask.current()
         if not task.decider.decision_context.is_replaying():
             return fn(*args, **kwargs)

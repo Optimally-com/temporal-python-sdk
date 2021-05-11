@@ -23,7 +23,6 @@ class NonDeterministicWorkflowException(BaseException):
 
 
 class ActivityTaskFailedException(Exception):
-
     def __init__(self, reason: str, cause: Exception) -> None:
         super().__init__(reason)
         self.reason = reason
@@ -31,8 +30,13 @@ class ActivityTaskFailedException(Exception):
 
 
 class ActivityTaskTimeoutException(Exception):
-
-    def __init__(self, event_id: int = None, timeout_type: TimeoutType = None, details: bytes = None, *args: object) -> None:
+    def __init__(
+        self,
+        event_id: int = None,
+        timeout_type: TimeoutType = None,
+        details: bytes = None,
+        *args: object,
+    ) -> None:
         super().__init__(*args)
         self.details = details
         self.timeout_type = timeout_type
@@ -50,8 +54,8 @@ class QueryNotFound(Exception):
 class QueryDidNotComplete(Exception):
     pass
 
-class CancellationException(Exception):
 
+class CancellationException(Exception):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.cause = None
@@ -82,6 +86,7 @@ class ActivityFailureException(ActivityException):
     Note: Don't change cause to be of type Failure, it needs to be an "str" to make it easier to handle serialization
     of Exceptions.
     """
+
     def __init__(self, event_id: int, activity_type: str, activity_id: str, cause: str):
         super().__init__(event_id, activity_type, activity_id)
         self.cause: str = cause
@@ -107,8 +112,10 @@ class WorkflowException(Exception):
     execution: WorkflowExecution = None
 
     def __str__(self):
-        return f'{type(self).__name__}: WorkflowType="{self.workflow_type}", ' \
-               f'WorkflowID="{self.execution.workflow_id}", RunID="{self.execution.run_id} '
+        return (
+            f'{type(self).__name__}: WorkflowType="{self.workflow_type}", '
+            f'WorkflowID="{self.execution.workflow_id}", RunID="{self.execution.run_id} '
+        )
 
 
 @dataclass
@@ -122,9 +129,10 @@ class QueryFailureException(Exception):
     execution: WorkflowExecution = None
 
     def __str__(self):
-        return f'{type(self).__name__}: QueryType="{self.query_type}", ' \
-               f'WorkflowID="{self.execution.workflow_id}", RunID="{self.execution.run_id} '
-
+        return (
+            f'{type(self).__name__}: QueryType="{self.query_type}", '
+            f'WorkflowID="{self.execution.workflow_id}", RunID="{self.execution.run_id} '
+        )
 
 
 class QueryRejectedException(Exception):

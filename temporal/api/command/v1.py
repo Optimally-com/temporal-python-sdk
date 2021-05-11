@@ -169,8 +169,8 @@ class Command(betterproto.Message):
     schedule_activity_task_command_attributes: "ScheduleActivityTaskCommandAttributes" = betterproto.message_field(
         2, group="attributes"
     )
-    start_timer_command_attributes: "StartTimerCommandAttributes" = betterproto.message_field(
-        3, group="attributes"
+    start_timer_command_attributes: "StartTimerCommandAttributes" = (
+        betterproto.message_field(3, group="attributes")
     )
     complete_workflow_execution_command_attributes: "CompleteWorkflowExecutionCommandAttributes" = betterproto.message_field(
         4, group="attributes"
@@ -181,8 +181,8 @@ class Command(betterproto.Message):
     request_cancel_activity_task_command_attributes: "RequestCancelActivityTaskCommandAttributes" = betterproto.message_field(
         6, group="attributes"
     )
-    cancel_timer_command_attributes: "CancelTimerCommandAttributes" = betterproto.message_field(
-        7, group="attributes"
+    cancel_timer_command_attributes: "CancelTimerCommandAttributes" = (
+        betterproto.message_field(7, group="attributes")
     )
     cancel_workflow_execution_command_attributes: "CancelWorkflowExecutionCommandAttributes" = betterproto.message_field(
         8, group="attributes"
@@ -190,8 +190,8 @@ class Command(betterproto.Message):
     request_cancel_external_workflow_execution_command_attributes: "RequestCancelExternalWorkflowExecutionCommandAttributes" = betterproto.message_field(
         9, group="attributes"
     )
-    record_marker_command_attributes: "RecordMarkerCommandAttributes" = betterproto.message_field(
-        10, group="attributes"
+    record_marker_command_attributes: "RecordMarkerCommandAttributes" = (
+        betterproto.message_field(10, group="attributes")
     )
     continue_as_new_workflow_execution_command_attributes: "ContinueAsNewWorkflowExecutionCommandAttributes" = betterproto.message_field(
         11, group="attributes"

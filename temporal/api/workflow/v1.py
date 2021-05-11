@@ -28,6 +28,7 @@ class WorkflowExecutionInfo(betterproto.Message):
     search_attributes: v1common.SearchAttributes = betterproto.message_field(11)
     auto_reset_points: "ResetPoints" = betterproto.message_field(12)
     task_queue: str = betterproto.string_field(13)
+    state_transition_count: int = betterproto.int64_field(14)
 
 
 @dataclass

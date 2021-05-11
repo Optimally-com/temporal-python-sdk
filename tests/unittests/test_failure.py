@@ -1,7 +1,12 @@
 import traceback
 
 from temporal.api.failure.v1 import Failure
-from temporal.exception_handling import failure_to_str, str_to_failure, serialize_exception, deserialize_exception
+from temporal.exception_handling import (
+    failure_to_str,
+    str_to_failure,
+    serialize_exception,
+    deserialize_exception,
+)
 from temporal.exceptions import ActivityTaskTimeoutException
 
 

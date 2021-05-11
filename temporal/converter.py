@@ -37,7 +37,9 @@ class DataConverter:
             payloads.payloads.append(self.to_payload(arg))
         return payloads
 
-    def from_payloads(self, payloads: Payloads, type_hints: List[type] = []) -> List[object]:
+    def from_payloads(
+        self, payloads: Payloads, type_hints: List[type] = []
+    ) -> List[object]:
         args: List[object] = []
         if payloads is None:
             return [None]

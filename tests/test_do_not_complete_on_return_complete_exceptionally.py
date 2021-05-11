@@ -16,13 +16,14 @@ caught_exception = None
 
 
 class GreetingException(Exception):
-
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
 
 class GreetingActivities:
-    @activity_method(task_queue=TASK_QUEUE, schedule_to_close_timeout=timedelta(seconds=1000))
+    @activity_method(
+        task_queue=TASK_QUEUE, schedule_to_close_timeout=timedelta(seconds=1000)
+    )
     async def compose_greeting(self) -> str:
         raise NotImplementedError
 
@@ -32,17 +33,20 @@ def greeting_activities_thread_func(task_token):
         client = WorkflowClient.new_client(namespace=NAMESPACE)
         activity_completion_client = client.new_activity_completion_client()
         sleep(10)
-        await activity_completion_client.complete_exceptionally(task_token, GreetingException("greeting error!"))
+        await activity_completion_client.complete_exceptionally(
+            task_token, GreetingException("greeting error!")
+        )
         client.close()
 
     asyncio.run(fn())
 
 
 class GreetingActivitiesImpl:
-
     async def compose_greeting(self):
         Activity.do_not_complete_on_return()
-        thread = threading.Thread(target=greeting_activities_thread_func, args=(Activity.get_task_token(),))
+        thread = threading.Thread(
+            target=greeting_activities_thread_func, args=(Activity.get_task_token(),)
+        )
         thread.start()
 
 
@@ -53,11 +57,11 @@ class GreetingWorkflow:
 
 
 class GreetingWorkflowImpl(GreetingWorkflow):
-
     def __init__(self):
         retry_parameters = RetryParameters(maximum_attempts=1)
-        self.greeting_activities: GreetingActivities = Workflow.new_activity_stub(GreetingActivities,
-                                                                              retry_parameters=retry_parameters)
+        self.greeting_activities: GreetingActivities = Workflow.new_activity_stub(
+            GreetingActivities, retry_parameters=retry_parameters
+        )
 
     async def get_greeting(self):
         try:
@@ -68,8 +72,12 @@ class GreetingWorkflowImpl(GreetingWorkflow):
 
 
 @pytest.mark.asyncio
-@pytest.mark.worker_config(NAMESPACE, TASK_QUEUE, activities=[(GreetingActivitiesImpl(), "GreetingActivities")],
-                           workflows=[GreetingWorkflowImpl])
+@pytest.mark.worker_config(
+    NAMESPACE,
+    TASK_QUEUE,
+    activities=[(GreetingActivitiesImpl(), "GreetingActivities")],
+    workflows=[GreetingWorkflowImpl],
+)
 async def test(worker):
     client = WorkflowClient.new_client(namespace=NAMESPACE)
     greeting_workflow: GreetingWorkflow = client.new_workflow_stub(GreetingWorkflow)
@@ -80,4 +88,3 @@ async def test(worker):
     assert isinstance(cause, GreetingException)
     assert cause.__traceback__ is not None
     assert cause.args == ("greeting error!",)
-

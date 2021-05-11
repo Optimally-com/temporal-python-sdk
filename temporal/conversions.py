@@ -6,20 +6,20 @@ from temporal.api.common.v1 import Payload, Payloads
 
 
 def camel_to_snake(name):
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
 def snake_to_camel(snake_str):
-    components = snake_str.split('_')
+    components = snake_str.split("_")
     # We capitalize the first letter of each component except the first one
     # with the 'title' method and join them together.
-    return components[0] + ''.join(x.title() for x in components[1:])
+    return components[0] + "".join(x.title() for x in components[1:])
 
 
 def snake_to_title(snake_str):
-    components = snake_str.split('_')
-    return ''.join(x.title() for x in components)
+    components = snake_str.split("_")
+    return "".join(x.title() for x in components)
 
 
 METADATA_ENCODING_KEY = "encoding"
@@ -35,7 +35,7 @@ METADATA_ENCODING_JSON = METADATA_ENCODING_JSON_NAME.encode("utf-8")
 METADATA_ENCODING_PROTOBUF_JSON_NAME = "json/protobuf"
 METADATA_ENCODING_PROTOBUF_JSON = METADATA_ENCODING_PROTOBUF_JSON_NAME.encode("utf-8")
 METADATA_ENCODING_PROTOBUF_NAME = "binary/protobuf"
-METADATA_ENCODING_PROTOBUF = METADATA_ENCODING_PROTOBUF_NAME.encode('utf-8')
+METADATA_ENCODING_PROTOBUF = METADATA_ENCODING_PROTOBUF_NAME.encode("utf-8")
 
 
 def encode_null(value: object) -> Optional[Payload]:
@@ -87,16 +87,11 @@ def decode_json_string(payload: Payload) -> object:
     return json.loads(b)
 
 
-ENCODINGS = [
-    encode_null,
-    encode_binary,
-    encode_json_string
-]
+ENCODINGS = [encode_null, encode_binary, encode_json_string]
 
 
 DECODINGS = {
     METADATA_ENCODING_NULL: decode_null,
     METADATA_ENCODING_RAW: decode_binary,
-    METADATA_ENCODING_JSON: decode_json_string
+    METADATA_ENCODING_JSON: decode_json_string,
 }
-

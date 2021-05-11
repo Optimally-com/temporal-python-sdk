@@ -53,31 +53,42 @@ WORKFLOW_RET_TYPE = WorkflowRetType()
 
 
 class GreetingActivities:
-    @activity_method(task_queue=TASK_QUEUE, schedule_to_close_timeout=timedelta(seconds=1000))
-    async def compose_greeting(self, arg1: ActivityArgType1, arg2: ActivityArgType2) -> ActivityRetType:
+    @activity_method(
+        task_queue=TASK_QUEUE, schedule_to_close_timeout=timedelta(seconds=1000)
+    )
+    async def compose_greeting(
+        self, arg1: ActivityArgType1, arg2: ActivityArgType2
+    ) -> ActivityRetType:
         raise NotImplementedError
 
 
 class GreetingActivitiesImpl:
-
-    async def compose_greeting(self, arg1: ActivityArgType1, arg2: ActivityArgType2) -> ActivityRetType:
+    async def compose_greeting(
+        self, arg1: ActivityArgType1, arg2: ActivityArgType2
+    ) -> ActivityRetType:
         return ACTIVITY_RET_TYPE
 
 
 class GreetingWorkflow:
     @workflow_method(task_queue=TASK_QUEUE)
-    async def get_greeting(self, arg1: WorkflowArgType1, arg2: WorkflowArgType2) -> WorkflowRetType:
+    async def get_greeting(
+        self, arg1: WorkflowArgType1, arg2: WorkflowArgType2
+    ) -> WorkflowRetType:
         raise NotImplementedError
 
 
 class GreetingWorkflowImpl(GreetingWorkflow):
-
     def __init__(self):
-        self.greeting_activities: GreetingActivities = Workflow.new_activity_stub(GreetingActivities)
+        self.greeting_activities: GreetingActivities = Workflow.new_activity_stub(
+            GreetingActivities
+        )
 
-    async def get_greeting(self, arg1: WorkflowArgType1, arg2: WorkflowArgType2) -> WorkflowRetType:
-        ret_value: ActivityRetType = await self.greeting_activities.compose_greeting(ACTIVITY_ARG_TYPE_1,
-                                                                                     ACTIVITY_ARG_TYPE_2)
+    async def get_greeting(
+        self, arg1: WorkflowArgType1, arg2: WorkflowArgType2
+    ) -> WorkflowRetType:
+        ret_value: ActivityRetType = await self.greeting_activities.compose_greeting(
+            ACTIVITY_ARG_TYPE_1, ACTIVITY_ARG_TYPE_2
+        )
         return WORKFLOW_RET_TYPE
 
 
@@ -85,7 +96,6 @@ deserialized = []
 
 
 class PickleDataConverter(DataConverter):
-
     def to_payload(self, arg: object) -> Payload:
         payload = Payload()
         payload.metadata = {METADATA_ENCODING_KEY: b"PYTHON_PICKLE"}
@@ -99,10 +109,17 @@ class PickleDataConverter(DataConverter):
 
 
 @pytest.mark.asyncio
-@pytest.mark.worker_config(NAMESPACE, TASK_QUEUE, activities=[(GreetingActivitiesImpl(), "GreetingActivities")],
-                           workflows=[GreetingWorkflowImpl], data_converter=PickleDataConverter())
+@pytest.mark.worker_config(
+    NAMESPACE,
+    TASK_QUEUE,
+    activities=[(GreetingActivitiesImpl(), "GreetingActivities")],
+    workflows=[GreetingWorkflowImpl],
+    data_converter=PickleDataConverter(),
+)
 async def test(worker):
-    client = WorkflowClient.new_client(namespace=NAMESPACE, data_converter=PickleDataConverter())
+    client = WorkflowClient.new_client(
+        namespace=NAMESPACE, data_converter=PickleDataConverter()
+    )
     greeting_workflow: GreetingWorkflow = client.new_workflow_stub(GreetingWorkflow)
     await greeting_workflow.get_greeting(WORKFLOW_ARG_TYPE_1, WORKFLOW_ARG_TYPE_2)
     for t, obj in deserialized:
@@ -119,5 +136,5 @@ async def test(worker):
         (WorkflowArgType2, WORKFLOW_ARG_TYPE_2),
         (ActivityRetType, ACTIVITY_RET_TYPE),
         # Processing workflow return value
-        (WorkflowRetType, WORKFLOW_RET_TYPE)
+        (WorkflowRetType, WORKFLOW_RET_TYPE),
     ]

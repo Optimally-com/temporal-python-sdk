@@ -15,6 +15,7 @@ def setup_module():
 
 async def monitor_teardown():
     from .conftest import loop
+
     while True:
         running_tasks = asyncio.all_tasks(loop)
         print(f"running_tasks={len(running_tasks)}")
@@ -23,6 +24,7 @@ async def monitor_teardown():
 
 def teardown_module():
     from .conftest import loop
+
     pending = asyncio.all_tasks(loop)
     print("Waiting for workers to cleanup....")
     loop.create_task(monitor_teardown())

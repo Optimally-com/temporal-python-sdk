@@ -7,7 +7,10 @@ from typing import Dict
 
 from temporal.api.common.v1 import Header, Payload, Payloads
 from temporal.api.enums.v1 import EventType
-from temporal.api.history.v1 import MarkerRecordedEventAttributes, HistoryEvent
+from temporal.api.history.v1 import (
+    MarkerRecordedEventAttributes,
+    HistoryEvent,
+)
 
 from .decision_loop import DecisionContext
 
@@ -16,8 +19,14 @@ MUTABLE_MARKER_HEADER_KEY = "MutableMarkerHeader"
 
 class MarkerInterface:
     @staticmethod
-    def from_event_attributes(attributes: MarkerRecordedEventAttributes) -> MarkerInterface:
-        if attributes.header and attributes.header.fields and MUTABLE_MARKER_HEADER_KEY in attributes.header.fields:
+    def from_event_attributes(
+        attributes: MarkerRecordedEventAttributes,
+    ) -> MarkerInterface:
+        if (
+            attributes.header
+            and attributes.header.fields
+            and MUTABLE_MARKER_HEADER_KEY in attributes.header.fields
+        ):
             buffer: bytes = attributes.header.fields.get(MUTABLE_MARKER_HEADER_KEY).data
             header = MarkerHeader.from_json(str(buffer, "utf-8"))  # type: ignore
             return MarkerData(header=header, data=attributes.details)
@@ -50,7 +59,9 @@ class MarkerData(MarkerInterface):
     data: Dict[str, Payloads] = None
 
     @staticmethod
-    def create(id: str, event_id: int, data: Dict[str, Payloads], access_count: int) -> MarkerData:
+    def create(
+        id: str, event_id: int, data: Dict[str, Payloads], access_count: int
+    ) -> MarkerData:
         header = MarkerHeader(id=id, event_id=event_id, access_count=access_count)
         return MarkerData(header=header, data=data)
 
@@ -84,8 +95,12 @@ class MarkerHandler:
     marker_name: str
     mutable_marker_results: Dict[str, MarkerResult] = field(default_factory=dict)
 
-    def record_mutable_marker(self, id: str, event_id: int, data: Dict[str, Payloads], access_count: int):
-        marker = MarkerData.create(id=id, event_id=event_id, data=data, access_count=access_count)
+    def record_mutable_marker(
+        self, id: str, event_id: int, data: Dict[str, Payloads], access_count: int
+    ):
+        marker = MarkerData.create(
+            id=id, event_id=event_id, data=data, access_count=access_count
+        )
         if id in self.mutable_marker_results:
             self.mutable_marker_results[id].replayed = True
         else:
@@ -122,19 +137,27 @@ class MarkerHandler:
 
     # This method is currently not being used - after adopting the version logic from the
     # Golang client
-    def get_marker_data_from_history(self, event_id: int, marker_id: str, expected_access_count: int) -> \
-            Dict[str, Payloads]:
-        event: HistoryEvent = self.decision_context.decider.get_optional_decision_event(event_id)
+    def get_marker_data_from_history(
+        self, event_id: int, marker_id: str, expected_access_count: int
+    ) -> Dict[str, Payloads]:
+        event: HistoryEvent = self.decision_context.decider.get_optional_decision_event(
+            event_id
+        )
         if not event or event.event_type != EventType.EVENT_TYPE_MARKER_RECORDED:
             return None
 
-        attributes: MarkerRecordedEventAttributes = event.marker_recorded_event_attributes
+        attributes: MarkerRecordedEventAttributes = (
+            event.marker_recorded_event_attributes
+        )
         name = attributes.marker_name
         if self.marker_name != name:
             return None
 
         marker_data = MarkerInterface.from_event_attributes(attributes)
-        if marker_id != marker_data.get_id() or marker_data.get_access_count() > expected_access_count:
+        if (
+            marker_id != marker_data.get_id()
+            or marker_data.get_access_count() > expected_access_count
+        ):
             return None
 
         return marker_data.get_data()

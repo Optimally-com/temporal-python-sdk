@@ -27,9 +27,13 @@ async def worker(request):
     task_queue = marker.args[1]
     activities = marker.kwargs.get("activities", [])
     workflows = marker.kwargs.get("workflows", [])
-    data_converter = marker.kwargs.get("data_converter", DEFAULT_DATA_CONVERTER_INSTANCE)
+    data_converter = marker.kwargs.get(
+        "data_converter", DEFAULT_DATA_CONVERTER_INSTANCE
+    )
 
-    client: WorkflowClient = WorkflowClient.new_client("localhost", 7233, data_converter=data_converter)
+    client: WorkflowClient = WorkflowClient.new_client(
+        "localhost", 7233, data_converter=data_converter
+    )
     factory = WorkerFactory(client, namespace)
     worker_instance = factory.new_worker(task_queue)
     for a_instance, a_cls in activities:

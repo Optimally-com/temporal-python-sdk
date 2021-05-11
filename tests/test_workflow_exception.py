@@ -7,7 +7,6 @@ NAMESPACE = "default"
 
 
 class GreetingException(Exception):
-
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
@@ -19,13 +18,14 @@ class GreetingWorkflow:
 
 
 class GreetingWorkflowImpl(GreetingWorkflow):
-
     async def get_greeting(self):
         raise GreetingException("blah")
 
 
 @pytest.mark.asyncio
-@pytest.mark.worker_config(NAMESPACE, TASK_QUEUE, activities=[], workflows=[GreetingWorkflowImpl])
+@pytest.mark.worker_config(
+    NAMESPACE, TASK_QUEUE, activities=[], workflows=[GreetingWorkflowImpl]
+)
 async def test(worker):
     client = WorkflowClient.new_client(namespace=NAMESPACE)
     greeting_workflow: GreetingWorkflow = client.new_workflow_stub(GreetingWorkflow)

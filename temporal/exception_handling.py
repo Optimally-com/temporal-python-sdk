@@ -27,13 +27,14 @@ def exception_class_fqn(o):
     # if module is None or module == str.__class__.__module__:
     #     return o.__class__.__name__  # Avoid reporting __builtin__
     # else:
-    return module + '.' + o.__class__.__name__
+    return module + "." + o.__class__.__name__
 
 
 def import_class_from_string(path):
     # Taken from: https://stackoverflow.com/a/30042585
     from importlib import import_module
-    module_path, _, class_name = path.rpartition('.')
+
+    module_path, _, class_name = path.rpartition(".")
     mod = import_module(module_path)
     klass = getattr(mod, class_name)
     return klass
@@ -49,17 +50,21 @@ def serialize_exception(ex: BaseException) -> Failure:
     failure.application_failure_info = ApplicationFailureInfo()
     failure.application_failure_info.type = exception_class_fqn(ex)
     tb = "".join(traceback.format_exception(type(ex), ex, ex.__traceback__))
-    failure.stack_trace = json.dumps({
-        "class": exception_cls_name,
-        "args": ex.args,
-        "traceback": tb,
-    })
+    failure.stack_trace = json.dumps(
+        {
+            "class": exception_cls_name,
+            "args": ex.args,
+            "traceback": tb,
+        }
+    )
     return failure
 
 
 """
 TODO: Need unit testing for this
 """
+
+
 def deserialize_exception(details: Failure) -> Exception:
     """
     TODO: Support built-in types like Exception
@@ -82,7 +87,9 @@ def deserialize_exception(details: Failure) -> Exception:
                 exception.with_traceback(t.as_traceback())
         except Exception as e:
             exception = None
-            logger.error("Failed to deserialize exception (details=%s) cause=%r", details_dict, e)
+            logger.error(
+                "Failed to deserialize exception (details=%s) cause=%r", details_dict, e
+            )
 
     if not exception:
         # TODO: Better to deserialize details

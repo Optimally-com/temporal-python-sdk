@@ -45,4 +45,6 @@ class DecisionId:
         if not isinstance(other, DecisionId):
             return False
         else:
-            return (self.decision_target == other.decision_target) and (self.decision_event_id == other.decision_event_id)
+            return (self.decision_target == other.decision_target) and (
+                self.decision_event_id == other.decision_event_id
+            )

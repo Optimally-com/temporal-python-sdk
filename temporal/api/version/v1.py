@@ -2,19 +2,40 @@
 # sources: temporal/api/version/v1/message.proto
 # plugin: python-betterproto
 from dataclasses import dataclass
+from datetime import datetime
+from typing import List
 
 import betterproto
 
-
-@dataclass
-class SupportedSDKVersions(betterproto.Message):
-    """SupportedSDKVersions contains the support versions for SDK."""
-
-    go_sdk: str = betterproto.string_field(1)
-    java_sdk: str = betterproto.string_field(2)
+from temporal.api.enums import v1 as v1enums
 
 
 @dataclass
-class WorkerVersionInfo(betterproto.Message):
-    implementation: str = betterproto.string_field(1)
-    feature_version: str = betterproto.string_field(2)
+class ReleaseInfo(betterproto.Message):
+    """ReleaseInfo contains information about specific version of temporal."""
+
+    version: str = betterproto.string_field(1)
+    release_time: datetime = betterproto.message_field(2)
+    notes: str = betterproto.string_field(3)
+
+
+@dataclass
+class Alert(betterproto.Message):
+    """Alert contains notification and severity."""
+
+    message: str = betterproto.string_field(1)
+    severity: v1enums.Severity = betterproto.enum_field(2)
+
+
+@dataclass
+class VersionInfo(betterproto.Message):
+    """
+    VersionInfo contains details about current and recommended release versions
+    as well as alerts and upgrade instructions.
+    """
+
+    current: "ReleaseInfo" = betterproto.message_field(1)
+    recommended: "ReleaseInfo" = betterproto.message_field(2)
+    instructions: str = betterproto.string_field(3)
+    alerts: List["Alert"] = betterproto.message_field(4)
+    last_update_time: datetime = betterproto.message_field(5)

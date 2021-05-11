@@ -8,7 +8,6 @@ signal_invoked: bool = False
 
 
 class GreetingWorkflow:
-
     @signal_method
     async def hello(self):
         raise NotImplementedError
@@ -19,7 +18,6 @@ class GreetingWorkflow:
 
 
 class GreetingWorkflowImpl(GreetingWorkflow):
-
     def __init__(self):
         self.signal_invoked = False
 
@@ -30,18 +28,22 @@ class GreetingWorkflowImpl(GreetingWorkflow):
     async def get_greeting(self):
         def fn():
             return self.signal_invoked
+
         await Workflow.await_till(fn)
 
 
 @pytest.mark.asyncio
-@pytest.mark.worker_config(NAMESPACE, TASK_QUEUE, activities=[], workflows=[GreetingWorkflowImpl])
+@pytest.mark.worker_config(
+    NAMESPACE, TASK_QUEUE, activities=[], workflows=[GreetingWorkflowImpl]
+)
 async def test(worker):
     global signal_invoked
     client = WorkflowClient.new_client(namespace=NAMESPACE)
     greeting_workflow: GreetingWorkflow = client.new_workflow_stub(GreetingWorkflow)
     context = await WorkflowClient.start(greeting_workflow.get_greeting)
-    greeting_workflow = client.new_workflow_stub_from_workflow_id(GreetingWorkflow,
-                                                                  workflow_id=context.workflow_execution.workflow_id)
+    greeting_workflow = client.new_workflow_stub_from_workflow_id(
+        GreetingWorkflow, workflow_id=context.workflow_execution.workflow_id
+    )
     await greeting_workflow.hello()
     await client.wait_for_close(context)
     assert signal_invoked

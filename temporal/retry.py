@@ -15,19 +15,30 @@ def retry(logger=None):
             while True:
                 try:
                     await fp(*args, **kwargs)
-                    logger.debug("@retry decorated function %s exited, ending retry loop", fp.__name__)
+                    logger.debug(
+                        "@retry decorated function %s exited, ending retry loop",
+                        fp.__name__,
+                    )
                     break
                 except Exception as ex:
                     now = calendar.timegm(time.gmtime())
-                    if last_failed_time == -1 or (now - last_failed_time) > RESET_DELAY_AFTER_SECONDS:
+                    if (
+                        last_failed_time == -1
+                        or (now - last_failed_time) > RESET_DELAY_AFTER_SECONDS
+                    ):
                         delay_seconds = INITIAL_DELAY_SECONDS
                     else:
                         delay_seconds = delay_seconds * BACK_OFF_MULTIPLIER
                     if delay_seconds > MAX_DELAY_SECONDS:
                         delay_seconds = MAX_DELAY_SECONDS
                     last_failed_time = now
-                    logger.error("%s failed: %s, retrying in %d seconds", fp.__name__, ex,
-                                 delay_seconds, exc_info=True)
+                    logger.error(
+                        "%s failed: %s, retrying in %d seconds",
+                        fp.__name__,
+                        ex,
+                        delay_seconds,
+                        exc_info=True,
+                    )
                     await asyncio.sleep(delay_seconds)
 
         return retry_loop
@@ -37,6 +48,7 @@ def retry(logger=None):
 
 if __name__ == "__main__":
     import logging
+
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger("retry-test")
 

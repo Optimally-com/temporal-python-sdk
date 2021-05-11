@@ -15,7 +15,9 @@ class Async:
     def function_with_self(method, self, *args):
         assert self._decision_context
         assert method._execute_parameters
-        parameters: ExecuteActivityParameters = copy.deepcopy(method._execute_parameters)
+        parameters: ExecuteActivityParameters = copy.deepcopy(
+            method._execute_parameters
+        )
         return Async.call(self, parameters, args)
 
     @staticmethod
@@ -25,8 +27,11 @@ class Async:
         if self._retry_parameters:
             parameters.retry_parameters = self._retry_parameters
         from temporal.decision_loop import DecisionContext
+
         decision_context: DecisionContext = self._decision_context
-        parameters.input = decision_context.decider.worker.client.data_converter.to_payloads(args)
+        parameters.input = (
+            decision_context.decider.worker.client.data_converter.to_payloads(args)
+        )
         return decision_context.schedule_activity_task(parameters=parameters)
 
     @staticmethod
@@ -51,7 +56,6 @@ class Async:
 
     @staticmethod
     async def all_of(futures: List[Union[ActivityFuture, Future]], timeout_seconds=0):
-
         def condition():
             for f in futures:
                 if not f.done():

@@ -1,3 +1,5 @@
+set -ex
+
 rm -rf temporal-api
 git clone https://github.com/temporalio/api.git temporal-api
 cd temporal-api

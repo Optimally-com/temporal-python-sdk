@@ -14,14 +14,12 @@ c = []
 
 
 class GreetingWorkflow:
-
     @workflow_method(task_queue=TASK_QUEUE)
     async def get_greeting(self) -> None:
         raise NotImplementedError
 
 
 class GreetingWorkflowImpl(GreetingWorkflow):
-
     async def get_greeting(self):
         global a, b, c
         a.append(Workflow.now())
@@ -33,7 +31,9 @@ class GreetingWorkflowImpl(GreetingWorkflow):
 
 
 @pytest.mark.asyncio
-@pytest.mark.worker_config(NAMESPACE, TASK_QUEUE, activities=[], workflows=[GreetingWorkflowImpl])
+@pytest.mark.worker_config(
+    NAMESPACE, TASK_QUEUE, activities=[], workflows=[GreetingWorkflowImpl]
+)
 async def test(worker):
     global a, b, c
     a, b, c = [], [], []

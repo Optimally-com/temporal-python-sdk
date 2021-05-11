@@ -28,15 +28,14 @@ class NamespaceNotActiveFailure(betterproto.Message):
 @dataclass
 class ClientVersionNotSupportedFailure(betterproto.Message):
     client_version: str = betterproto.string_field(1)
-    client_impl: str = betterproto.string_field(2)
+    client_name: str = betterproto.string_field(2)
     supported_versions: str = betterproto.string_field(3)
 
 
 @dataclass
-class FeatureVersionNotSupportedFailure(betterproto.Message):
-    feature: str = betterproto.string_field(1)
-    feature_version: str = betterproto.string_field(2)
-    supported_versions: str = betterproto.string_field(3)
+class ServerVersionNotSupportedFailure(betterproto.Message):
+    server_version: str = betterproto.string_field(1)
+    client_supported_server_versions: str = betterproto.string_field(2)
 
 
 @dataclass
@@ -52,3 +51,8 @@ class CancellationAlreadyRequestedFailure(betterproto.Message):
 @dataclass
 class QueryFailedFailure(betterproto.Message):
     pass
+
+
+@dataclass
+class PermissionDeniedFailure(betterproto.Message):
+    reason: str = betterproto.string_field(1)

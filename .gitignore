@@ -1,7 +1,7 @@
 dist
 build
-cadence_client.egg-info/
 /__init__.py
 temporal-api
 dependencies
 /temporal_python_sdk.egg-info/
+gogoproto.py

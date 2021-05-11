@@ -21,13 +21,14 @@ class Greeting:
 
 
 class GreetingActivities:
-    @activity_method(task_queue=TASK_QUEUE, schedule_to_close_timeout=timedelta(seconds=1000))
+    @activity_method(
+        task_queue=TASK_QUEUE, schedule_to_close_timeout=timedelta(seconds=1000)
+    )
     async def compose_greeting(self, name: str, age: int) -> Greeting:
         raise NotImplementedError
 
 
 class GreetingActivitiesImpl:
-
     async def compose_greeting(self, name: str, age: int) -> Greeting:
         return Greeting(name, age)
 
@@ -39,16 +40,16 @@ class GreetingWorkflow:
 
 
 class GreetingWorkflowImpl(GreetingWorkflow):
-
     def __init__(self):
-        self.greeting_activities: GreetingActivities = Workflow.new_activity_stub(GreetingActivities)
+        self.greeting_activities: GreetingActivities = Workflow.new_activity_stub(
+            GreetingActivities
+        )
 
     async def get_greeting(self) -> Greeting:
         return await self.greeting_activities.compose_greeting("Bob", 20)
 
 
 class PickleDataConverter(DataConverter):
-
     def to_payload(self, arg: object) -> Payload:
         payload = Payload()
         payload.metadata = {METADATA_ENCODING_KEY: b"PYTHON_PICKLE"}
@@ -61,10 +62,17 @@ class PickleDataConverter(DataConverter):
 
 
 @pytest.mark.asyncio
-@pytest.mark.worker_config(NAMESPACE, TASK_QUEUE, activities=[(GreetingActivitiesImpl(), "GreetingActivities")],
-                           workflows=[GreetingWorkflowImpl], data_converter=PickleDataConverter())
+@pytest.mark.worker_config(
+    NAMESPACE,
+    TASK_QUEUE,
+    activities=[(GreetingActivitiesImpl(), "GreetingActivities")],
+    workflows=[GreetingWorkflowImpl],
+    data_converter=PickleDataConverter(),
+)
 async def test(worker):
-    client = WorkflowClient.new_client(namespace=NAMESPACE, data_converter=PickleDataConverter())
+    client = WorkflowClient.new_client(
+        namespace=NAMESPACE, data_converter=PickleDataConverter()
+    )
     greeting_workflow: GreetingWorkflow = client.new_workflow_stub(GreetingWorkflow)
     ret_value = await greeting_workflow.get_greeting()
 

@@ -28,7 +28,6 @@ class TestWorkflowGetVersion:
 
 
 class TestWorkflowGetVersionImplV1(TestWorkflowGetVersion):
-
     def __init__(self):
         pass
 
@@ -39,7 +38,6 @@ class TestWorkflowGetVersionImplV1(TestWorkflowGetVersion):
 
 
 class TestWorkflowGetVersionImplV2(TestWorkflowGetVersion):
-
     def __init__(self):
         pass
 
@@ -50,18 +48,28 @@ class TestWorkflowGetVersionImplV2(TestWorkflowGetVersion):
         global v2_done
         v2_hits += 1
 
-        version_found_in_v2_step_1_0 = Workflow.get_version("first-item", DEFAULT_VERSION, 2)
-        version_found_in_v2_step_1_1 = Workflow.get_version("first-item", DEFAULT_VERSION, 2)
+        version_found_in_v2_step_1_0 = Workflow.get_version(
+            "first-item", DEFAULT_VERSION, 2
+        )
+        version_found_in_v2_step_1_1 = Workflow.get_version(
+            "first-item", DEFAULT_VERSION, 2
+        )
         await Workflow.sleep(60)
-        version_found_in_v2_step_2_0 = Workflow.get_version("first-item", DEFAULT_VERSION, 2)
-        version_found_in_v2_step_2_1 = Workflow.get_version("first-item", DEFAULT_VERSION, 2)
+        version_found_in_v2_step_2_0 = Workflow.get_version(
+            "first-item", DEFAULT_VERSION, 2
+        )
+        version_found_in_v2_step_2_1 = Workflow.get_version(
+            "first-item", DEFAULT_VERSION, 2
+        )
         v2_done = True
 
 
 @pytest.mark.asyncio
 async def test_workflow_workflow_get_version():
     global v1_hits, v2_hits
-    client: WorkflowClient = WorkflowClient.new_client("localhost", 7233, namespace=NAMESPACE)
+    client: WorkflowClient = WorkflowClient.new_client(
+        "localhost", 7233, namespace=NAMESPACE
+    )
     factory = WorkerFactory(client, NAMESPACE)
     worker = factory.new_worker(TASK_QUEUE)
     worker.register_workflow_implementation_type(TestWorkflowGetVersionImplV1)

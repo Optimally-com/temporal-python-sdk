@@ -118,10 +118,16 @@ CADENCE_ERROR_FIELDS = {
     "namespaceNotActiveError": NamespaceNotActiveError,
     "limitExceededError": LimitExceededError,
     "workflowAlreadyStartedError": WorkflowExecutionAlreadyStartedError,
-    "clientVersionNotSupportedError": ClientVersionNotSupportedError
+    "clientVersionNotSupportedError": ClientVersionNotSupportedError,
 }
 
-IGNORE_FIELDS_IN_ERRORS = ("args", "type_spec", "from_primitive", "to_primitive", "with_traceback")
+IGNORE_FIELDS_IN_ERRORS = (
+    "args",
+    "type_spec",
+    "from_primitive",
+    "to_primitive",
+    "with_traceback",
+)
 
 
 def find_error(response):
